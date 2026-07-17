@@ -103,3 +103,5 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+web/AGENTS.md
+web/CLAUDE.md

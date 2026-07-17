@@ -1,6 +1,8 @@
 # Tomato Leaf Disease Detection
 
-A deep learning–based web application that classifies tomato leaf diseases from uploaded photos. Built with TensorFlow (EfficientNetB0), served via a FastAPI backend on Google Cloud Run, and deployed as a static frontend on Firebase Hosting.
+A deep learning-based web application that classifies tomato leaf diseases from photos. An EfficientNetB0 model (TensorFlow) is converted to ONNX and runs fully in the browser with ONNX Runtime Web, so the app is a static site with no inference server and no hosting cost. Frontend: Next.js (App Router, Tailwind CSS v4, shadcn/ui), statically exported.
+
+The original FastAPI + Cloud Run backend (`main.py`, `Dockerfile`) is kept for reference but is no longer required.
 
 ---
 
@@ -56,8 +58,11 @@ tomato-leaf-disease/
 ├── firebase.json                  # Firebase Hosting configuration
 ├── .firebaserc                    # Firebase project binding
 ├── tomato-leaf-disease.ipynb      # Training and evaluation notebook
-├── public/
-│   └── index.html                 # Frontend UI (single-page app)
+├── web/                           # Next.js frontend (App Router + Tailwind v4 + shadcn/ui)
+│   ├── app/                       # Layout, page, global styles
+│   ├── components/                # Sections, scanner, shadcn/ui components
+│   ├── lib/                       # Disease data, utilities
+│   └── public/model/              # Model evaluation charts
 └── img/
     ├── training_history.png
     ├── confusion_matrix.png
@@ -118,7 +123,13 @@ Accepts a tomato leaf image and returns the predicted class and confidence score
    uvicorn main:app --host 0.0.0.0 --port 8080
    ```
 
-4. Open `public/index.html` directly in your browser, or serve it with any static file server. The frontend is pre-configured to call the deployed Cloud Run URL; update the `API_URL` constant in `index.html` to `http://localhost:8080/predict` for local testing.
+4. Run the frontend:
+   ```bash
+   cd web
+   npm install
+   npm run dev
+   ```
+   The app runs at `http://localhost:3000` and calls the deployed Cloud Run URL by default. For a local API, set `NEXT_PUBLIC_API_URL=http://localhost:8080/predict` in `web/.env.local`.
 
 ---
 
@@ -155,6 +166,11 @@ gcloud run deploy tomato-leaf-disease \
 ### Frontend — Firebase Hosting
 
 ```bash
+# Build the static export first
+cd web
+npm run build
+cd ..
+
 # Install Firebase CLI if needed
 npm install -g firebase-tools
 
