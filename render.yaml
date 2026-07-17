@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: tomatoscan-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
